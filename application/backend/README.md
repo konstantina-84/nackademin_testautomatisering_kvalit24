@@ -22,7 +22,35 @@ uvicorn main:app --reload
 To Stop the application type `ctrl + C` in the terminal that was started.
 
 
+# APIs
+## 
 
+### Don`t require token
+
+#### Create User
+```
+POST /signup
+{ "username": "john", "password": "1234" }
+```
+
+#### Login with User
+```
+POST /login
+username=john&password=1234 (x-www-form-urlencoded)
+```
+
+
+### Requires Authorization bearer token
+
+#### Create Product
+```
+POST /products
+{ "name": "Laptop" }
+```
+#### Assign product to user
+```
+POST /assign/1
+```
 
 
 ## FAQ
