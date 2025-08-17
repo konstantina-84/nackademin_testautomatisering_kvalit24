@@ -172,7 +172,7 @@ def assign_product_to_user(
         db.refresh(current_user)
     return current_user
 
-@app.delete("/user/products/{product_id}", response_model=UserResponse)
+@app.delete("/user/product/{product_id}", response_model=UserResponse)
 def unassign_product_from_user(
     product_id: int,
     db: Session = Depends(get_db),
@@ -204,3 +204,24 @@ def create_product(
 @app.get("/products", response_model=List[ProductResponse])
 def list_products(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return db.query(Product).all()
+
+
+@app.delete("/product/{product_id}", response_model=ProductResponse)
+def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Remove associations with all users
+    for user in product.owners:
+        user.products.remove(product)
+
+    # Delete the product itself
+    db.delete(product)
+    db.commit()
+
+    return product
