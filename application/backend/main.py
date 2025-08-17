@@ -146,12 +146,55 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    access_token = create_access_token(
+        data={"sub": user.username},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# --- Product CRUD ---
+# --- USER ENDPOINTS ---
+@app.get("/user", response_model=UserResponse)
+def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@app.post("/user/products/{product_id}", response_model=UserResponse)
+def assign_product_to_user(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    if product not in current_user.products:
+        current_user.products.append(product)
+        db.commit()
+        db.refresh(current_user)
+    return current_user
+
+@app.delete("/user/products/{product_id}", response_model=UserResponse)
+def unassign_product_from_user(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    if product in current_user.products:
+        current_user.products.remove(product)
+        db.commit()
+        db.refresh(current_user)
+    return current_user
+
+
+# --- PRODUCTS ENDPOINTS ---
 @app.post("/products", response_model=ProductResponse)
-def create_product(product: ProductCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_product(
+    product: ProductCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     new_product = Product(name=product.name)
     db.add(new_product)
     db.commit()
@@ -161,19 +204,3 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db), curren
 @app.get("/products", response_model=List[ProductResponse])
 def list_products(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return db.query(Product).all()
-
-# --- Assign product to user ---
-@app.post("/assign/{product_id}")
-def assign_product_to_user(product_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    if product not in current_user.products:
-        current_user.products.append(product)
-        db.commit()
-    return {"message": f"Product '{product.name}' assigned to user '{current_user.username}'"}
-
-# --- User profile ---
-@app.get("/me", response_model=UserResponse)
-def get_my_profile(current_user: User = Depends(get_current_user)):
-    return current_user
