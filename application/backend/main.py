@@ -1,10 +1,10 @@
+from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, Session
-from passlib.context import CryptContext
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
 from typing import List
 
 # --- CONFIG ---
@@ -151,6 +151,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+# --- healthcheck ---
+@app.get("/health")
+def healthcheck():
+    return "alive"
 
 # --- USER ENDPOINTS ---
 @app.get("/user", response_model=UserResponse)
