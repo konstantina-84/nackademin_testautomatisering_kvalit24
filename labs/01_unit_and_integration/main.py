@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-"I love python"
+"I love python 1"
 
 
 def format_response(data):
