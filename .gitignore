@@ -1,12 +1,6 @@
-**/.venv
-.venv
-.vscode
-**/.vscode/
-__pycache__
-**/__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pdb
-*.egg
-*.egg-info
+# Virtuella miljöer
+.venv/
+application/backend/.venv/
+labs/01_unit_and_integration/.venv_api/
+labs/01_unit_and_integration/.venv_test/
+
