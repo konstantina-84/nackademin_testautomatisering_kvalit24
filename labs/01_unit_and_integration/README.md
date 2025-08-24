@@ -11,7 +11,7 @@ pip install -r requirements_test.txt
 
 ## Unit Tests
 1. Run the current test
-
+cd 
     ```shell
     pytest unit_tests.py
     ```
