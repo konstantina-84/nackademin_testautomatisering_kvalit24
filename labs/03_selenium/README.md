@@ -8,7 +8,8 @@ uvicorn main:app --reload
 
 terminal 2 - from application/frontend
 ```
-uvicorn main:app --reload
+npm install
+npm run dev
 ```
 
 
@@ -41,7 +42,7 @@ pip install -r requirements.txt
 Validate the installation and setup is properly installed with
 
 ```shell
-python open_class_app.py
+pytest open_class_app.py
 ```
 
 
