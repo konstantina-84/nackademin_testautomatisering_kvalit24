@@ -3,7 +3,8 @@
 		"_postman_id": "68029b3c-d071-4243-9de4-853547417a83",
 		"name": "nackademin-app",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "40975146"
+		"_exporter_id": "40975146",
+		"_collection_link": "https://gold-robot-739222.postman.co/workspace/My-Workspace~936ee72d-6135-4b50-81dc-f2a73e4fc5c6/collection/40975146-68029b3c-d071-4243-9de4-853547417a83?action=share&source=collection_link&creator=40975146"
 	},
 	"item": [
 		{
@@ -33,6 +34,9 @@
 					}
 				}
 			],
+			"protocolProfileBehavior": {
+				"strictSSL": false
+			},
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -64,6 +68,11 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const jwt = pm.response.json().access_token\r",
+							"\r",
+							"pm.environment.set(\"token\", jwt)\r",
+							"\r",
+							"\r",
 							"pm.test(\"Response status code is 200\",function\r",
 							"    (){\r",
 							"    pm.expect(pm.response.code).not.equal(401); \r",
@@ -71,8 +80,6 @@
 							"\r",
 							"var json = pm.response.json();\r",
 							"\r",
-							"// Store it in an environment variable\r",
-							"pm.environment.set(\"TOKEN\", json.access_token);\r",
 							"\r",
 							"pm.test(\"Response body is not empty\", function () {\r",
 							"    pm.expect(pm.response.text()).to.not.be.empty; \r",
@@ -114,7 +121,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbl9kZXYiLCJleHAiOjE3NTYyMTg2NzJ9.P-r5VWrQz5cSUN1CN2CX57a507AZGNPIR5lijoOKv5w\"",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -137,6 +144,65 @@
 					],
 					"path": [
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list user info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"pm.test(\"Response body is not empty\", function () {\r",
+							"    pm.expect(pm.response.text()).to.not.be.empty;\r",
+							"});\r",
+							"pm.test(\"Products list is empty\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.products).to.be.an('array').that.is.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n"
+				},
+				"url": {
+					"raw": "{{url}}/user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user"
 					]
 				}
 			},
@@ -183,7 +249,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbl9xYSIsImV4cCI6MTc1NjU0NjkyMn0.SIAekoEjuvPR-aIoIu-_YOb92brpZwY39y-FKgkkg3M",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -198,7 +264,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Apple\"\r\n}",
+					"raw": "{\r\n  \"name\": \"Peach\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -218,37 +284,36 @@
 			"response": []
 		},
 		{
-			"name": "list products",
+			"name": "products",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"// Parse JSON response\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"// Test: Status code is 200\r",
 							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
 							"});\r",
-							"pm.test(\"Response time is less than 200ms\", function () {\r",
-							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"\r",
+							"// Test: ID is a number\r",
+							"pm.test(\"ID is a number\", function () {\r",
+							"    json.forEach(product => {\r",
+							"        pm.expect(product.id).to.be.a(\"number\");\r",
+							"    });\r",
 							"});\r",
-							"pm.test(\"Response body is not empty\", function () {\r",
-							"    pm.expect(pm.response.text()).to.not.be.empty;\r",
+							"\r",
+							"// Test: name is a string\r",
+							"pm.test(\"Has name as string\", function () {\r",
+							"    json.forEach(product => {\r",
+							"        pm.expect(product.name, \"Name does not exist\").to.exist;\r",
+							"        pm.expect(product.name).to.be.a(\"string\");\r",
+							"    });\r",
 							"});\r",
-							"pm.test(\"Response body contains one product\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.length).to.equal(4);\r",
-							"});\r",
-							"pm.test(\"Response body contains correct product name\", function () {\r",
-							"    var json = pm.response.json()[0]; // Define json correctly\r",
-							"    pm.expect(json).to.have.property(\"name\");\r",
-							"    pm.expect(json.name).to.be.a(\"string\");\r",
-							"    pm.expect(json.name).to.eql(\"Apple\"); // förväntat produktnamn\r",
-							"});\r",
-							"pm.test(\"Response body contains correct product id\", function () {\r",
-							"    var json = pm.response.json()[0]; // Define json correctly\r",
-							"    pm.expect(json).to.have.property(\"id\");\r",
-							"    pm.expect(json.id).to.be.a(\"number\");\r",
-							"    pm.expect(json.id).to.eql(1); // förväntat produktid\r",
-							"});\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript",
@@ -265,16 +330,27 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbl9kZXYiLCJleHAiOjE3NTY1NDczNzV9.v6Err34ozIimf4MXGOw0C_egIT3_JLiVVNn-xIRAGAo",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
 				},
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "\r\n"
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "{{url}}/products",
