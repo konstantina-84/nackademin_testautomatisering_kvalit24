@@ -7,7 +7,7 @@ class LoginPage:
         self.login_input_password = page.get_by_placeholder('Password')
         self.login_btn_login = page.locator('button.button-primary') #CSS locator
         self.login_label_have_account = page.get_by_text("Don't have an account?")
-        self.login_btn_submit = page.locator('#button.signup')
+        self.login_btn_signup = page.locator('#signup')
 
 
     def navigate(self):
