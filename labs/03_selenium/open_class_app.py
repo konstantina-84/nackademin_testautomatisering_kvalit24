@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 import time
 
 APP_URL = "http://localhost:5173"
@@ -9,33 +8,33 @@ options = Options()
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
 
-def test_navigate_to_signup():
-    # Arrange
+def test_signup_create_user():
     driver = webdriver.Chrome(options=options)
-    driver.get(APP_URL)
+    try:
+        driver.get(APP_URL)
+        time.sleep(2)
 
-    login_btn_signup = driver.find_element("id", "signup")
+        login_btn_signup = driver.find_element("id", "signup")
+        login_btn_signup.click()
+        time.sleep(2)
 
-    # Act
-    login_btn_signup.click()
+        username_input = driver.find_element(
+            "xpath", '//input[@placeholder="Username"]'
+        )
+        username_input.send_keys("admin_user")
 
-    username_input_field = driver.find_element(
-        "xpath", '//*[@id="root"]/div/div/input[1]'
-    )
+        password_input = driver.find_element(
+            "xpath", '//input[@placeholder="Password"]'
+        )
+        password_input.send_keys("pass_1234")
 
-    time.sleep(10)  # wait 9 seconds.
+        time.sleep(1)
 
-    username_input_field.send_keys("admin_dev")
+        signup_button = driver.find_element(
+            "xpath", '//button[@class="button-primary" or normalize-space()="Sign Up"]'
+        )
+        signup_button.click()
 
-    password_input_field = driver.find_element(
-        "xpath", '//*[@id="root"]/div/div/input[2]'
-    )
-
-    time.sleep(10)  # wait 9 seconds.
-
-    password_input_field.send_keys("pass_1234")
-
-    signup_btn = driver.find_element(By.CLASS_NAME, "button-primary")
-    signup_btn.click()
-    # Teardown
-    driver.quit()
+        time.sleep(3)
+    finally:
+        driver.quit()
