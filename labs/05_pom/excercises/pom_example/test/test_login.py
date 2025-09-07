@@ -29,5 +29,3 @@ def test_login_with_new_user(page: Page):
 
     # Login with new user
     po_login.login(username,password)
-
-
