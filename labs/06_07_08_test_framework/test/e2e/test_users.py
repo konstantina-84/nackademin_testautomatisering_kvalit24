@@ -1,9 +1,12 @@
+import os
 from playwright.sync_api import Page
 from models.ui.home import HomePage
 from models.ui.signup import SignupPage
 from models.ui.user import UserPage
 from models.api.user import UserAPI
 import libs.utils
+
+BASE_URL_BACKEND = os.getenv("BASE_URL_BACKEND", "http://localhost:8000")
 
 
 # Given I am a new potential customer​
@@ -55,7 +58,7 @@ def test_signup_auth_user(page: Page):
 
     home_page = HomePage(page)
     user_page = UserPage(username, page)
-    user_api = UserAPI("http://localhost:8000")
+    user_api = UserAPI(BASE_URL_BACKEND)
 
     # Get token from API
     response = user_api.login(username, password)

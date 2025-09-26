@@ -3,13 +3,13 @@ import requests
 import os
 from models.api.admin import AdminAPI
 
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+BASE_URL_BACKEND = os.getenv("BASE_URL_BACKEND", "http://localhost:8000")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin_user")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "pass_1234")
 
 
 def _admin_api():
-    api = AdminAPI(BASE_URL)
+    api = AdminAPI(BASE_URL_BACKEND)
     api.login(ADMIN_USERNAME, ADMIN_PASSWORD)
     return api
 

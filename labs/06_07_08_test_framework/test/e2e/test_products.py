@@ -1,8 +1,11 @@
+import os
 from libs.utils import generate_product_string_with_prefix
 from playwright.sync_api import Page
 from models.ui.home import HomePage
 from models.ui.admin import AdminPage
 from models.api.user import UserAPI
+
+BASE_URL_BACKEND = os.getenv("BASE_URL_BACKEND", "http://localhost:8000")
 
 
 # Given I am an admin user​
@@ -14,7 +17,7 @@ def test_add_product_to_catalog(page: Page):
 
     home_page = HomePage(page)
     admin_page = AdminPage(page)
-    user_api = UserAPI("http://localhost:8000")
+    user_api = UserAPI(BASE_URL_BACKEND)
     product = generate_product_string_with_prefix("mango", 8)
 
     # Get token from the API and verify that login is successful
@@ -54,7 +57,7 @@ def test_remove_product_from_catalog(page: Page):
 
     home_page = HomePage(page)
     admin_page = AdminPage(page)
-    user_api = UserAPI("http://localhost:8000")
+    user_api = UserAPI(BASE_URL_BACKEND)
     product = generate_product_string_with_prefix("mango", 8)
 
     # Get token from the API and verify that login is successful
